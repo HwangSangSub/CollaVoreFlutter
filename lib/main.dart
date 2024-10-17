@@ -38,10 +38,32 @@ class MyApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         title: 'CollaVore',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+      theme: ThemeData(
+        // 기본 색상을 #6C4EFF으로 설정
+        primaryColor: Color(0xFF6C4EFF),
+        // ColorScheme을 통해 다양한 색상 테마를 설정
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Color(0xFF6C4EFF), // 기본 색상
+          secondary: Colors.amber, // 보조 색상
         ),
+        // 앱바 테마
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF6C4EFF), // 앱바 배경 색상
+          elevation: 4,
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+        // 버튼 테마
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white, backgroundColor: Color(0xFF6C4EFF), // 텍스트 색상
+          ),
+        ),
+        // 텍스트 테마
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.black, fontSize: 16),
+          titleLarge: TextStyle(color: Color(0xFF6C4EFF), fontWeight: FontWeight.bold),
+        ),
+      ),
         home: LoginPage(),
       ),
     );
@@ -450,41 +472,3 @@ class _HistoryListViewState extends State<HistoryListView> {
     );
   }
 }
-
-// main() async {
-//   await initializeDateFormatting();
-
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (_) => LoginProvider()),
-//         //ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
-//       ],
-//       child: Main(),
-//     ),
-//   );
-// }
-
-// class Main extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Provider<String>.value(
-//       value: 'Shared Data',
-//       child: MaterialApp(
-//         title: 'CollaVoer',
-//         initialRoute: '/login',
-//         routes: {
-//           '/login': (context) => LoginPage(),
-//           // '/join': (context) => JoinPage(),
-//           // '/reg': (context) => RegPage(),
-//           '/cals/list': (context) => CalsPage(),
-//           '/project/list': (context) => ProjectPage(),
-//           '/appr/list': (context) => ApprPage(),
-//           // '/info': (context) => InfoPage(),
-//           // '/modify': (context) => ModifyPage(),
-//           // '/myPage': (context) => MyPage(),
-//         },
-//       ),
-//     );
-//   }
-// }
