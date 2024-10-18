@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ResetPasswordPage()),
+                                builder: (context) => FindPwdPage()),
                             (route) => true,
                           );
                     },

@@ -16,7 +16,6 @@ import './screens/appr/list.dart';
 
 void main() async {
   await initializeDateFormatting();
-  // runApp(MyApp());
 
   runApp(
     MultiProvider(

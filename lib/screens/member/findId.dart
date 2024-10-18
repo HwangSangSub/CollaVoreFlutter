@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import './findIdResult.dart';
 
 class FindIdPage extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _telController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class FindIdPage extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 TextField(
-                  controller: _contactController,
+                  controller: _telController,
                   decoration: InputDecoration(
                     hintText: '연락처를 입력하세요',
                     border: OutlineInputBorder(),
@@ -67,9 +71,59 @@ class FindIdPage extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        // 아이디 찾기 로직 추가
-                        print('아이디 찾기');
+                      onPressed: () async {
+                        String name = _nameController.text;
+                        String tel = _telController.text;
+                        final url =
+                            Uri.parse('http://192.168.0.40:8099/api/findId');
+                        final response = await http.post(url,
+                            headers: {'Content-Type': 'application/json'},
+                            body: json.encode({
+                              'name': name,
+                              'tel': tel,
+                            }));
+                        late String chkId;
+                        if (response.statusCode == 200) {
+                          if (response.body != '') {
+                            chkId = response.body;
+                          } else {
+                            chkId = '';
+                          }
+                        } else {
+                          chkId = '';
+                        }
+                        if (chkId == '') {
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext ctx) {
+                                return AlertDialog(
+                                  title: Text('아이디찾기 실패'),
+                                  content: Text('해당정보로 등록된 사원이 없습니다.'),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('확인'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('취소'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        } else {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FindIdResultPage(foundId: chkId)),
+                            (route) => false,
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black, // 버튼 색상
