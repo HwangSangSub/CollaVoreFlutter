@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import './login.dart';
 
-import './FindPwdResult.dart';
-
-class FindPwdPage extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+class FindPwdResultPage extends StatelessWidget {
+  final TextEditingController _pwdController = TextEditingController();
+  final String foundId; // 전달받은 아이디
+  FindPwdResultPage({required this.foundId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('비밀번호 찾기'),
+        title: Text('비밀번호 재설정'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -28,27 +28,15 @@ class FindPwdPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '이메일',
+                  '변경할 비밀번호',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 TextField(
-                  controller: _emailController,
+                  controller: _pwdController,
+                  obscureText: true,
                   decoration: InputDecoration(
-                    hintText: '이메일을 입력하세요',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  '이름',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: '이름을 입력하세요',
+                    hintText: '변경할 비밀번호를 입력하세요',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -69,20 +57,19 @@ class FindPwdPage extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        String email = _emailController.text;
-                        String name = _nameController.text;
+                        String email = foundId;
+                        String resetPwd = _pwdController.text;
                         final url =
-                            Uri.parse('http://192.168.0.40:8099/api/chkUser');
+                            Uri.parse('http://192.168.0.40:8099/api/pwdModify');
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({
                               'email': email,
-                              'name': name,
+                              'resetPwd': resetPwd,
                             }));
                         late String resetResult;
-                        print(response.body);
                         if (response.statusCode == 200) {
-                          resetResult = response.body;
+                            resetResult = response.body;
                         } else {
                           resetResult = 'Error';
                         }
@@ -92,8 +79,9 @@ class FindPwdPage extends StatelessWidget {
                               barrierDismissible: false,
                               builder: (BuildContext ctx) {
                                 return AlertDialog(
-                                  title: Text('아이디인증 실패'),
-                                  content: Text('해당정보로 등록된 사원이 없습니다.'),
+                                  title: Text('비밀번호 재설정 실패'),
+                                  content:
+                                      Text('비밀번호 재설정 실패입니다. 관리자에게 문의바랍니다.'),
                                   actions: [
                                     TextButton(
                                       child: Text('확인'),
@@ -116,8 +104,8 @@ class FindPwdPage extends StatelessWidget {
                             barrierDismissible: false,
                             builder: (BuildContext ctx) {
                               return AlertDialog(
-                                title: Text('이메일 인증 성공'),
-                                content: Text('이메일 인증이 완료되어 비밀번호 재설정으로 이동됩니다.'),
+                                title: Text('비밀번호 재설정 성공'),
+                                content: Text('비밀번호가 성공적으로 재설정되었습니다.'),
                                 actions: [
                                   TextButton(
                                     child: Text('확인'),
@@ -132,9 +120,7 @@ class FindPwdPage extends StatelessWidget {
                           Future.delayed(Duration(seconds: 1), () {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      FindPwdResultPage(foundId: email)),
+                              MaterialPageRoute(builder: (context) => LoginPage()),
                               (route) => false,
                             );
                           });
@@ -143,7 +129,7 @@ class FindPwdPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black, // 버튼 색상
                       ),
-                      child: Text('이메일 본인인증'),
+                      child: Text('비밀번호 재설정'),
                     ),
                   ],
                 ),

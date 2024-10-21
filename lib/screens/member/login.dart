@@ -102,7 +102,8 @@ class _LoginPageState extends State<LoginPage> {
                       if (_formKey.currentState!.validate()) {
                         String id = _idEditingController.text;
                         String pwd = _pwdEditingController.text;
-                        final url = Uri.parse('http://192.168.0.40:8099/api/login');
+                        final url =
+                            Uri.parse('http://192.168.0.40:8099/api/login');
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({
@@ -111,11 +112,14 @@ class _LoginPageState extends State<LoginPage> {
                             }));
                         late Map<String, dynamic> result;
                         late String loginId;
+                        late int empNo;
                         if (response.statusCode == 200) {
                           result = jsonDecode(utf8.decode(response.bodyBytes));
                           loginId = result['email'];
+                          empNo = result['empNo'];
                         } else {
                           loginId = '';
+                          empNo = 0;
                         }
                         if (loginId == '') {
                           showDialog(
@@ -143,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                               });
                         } else {
                           Provider.of<LoginProvider>(context, listen: false)
-                              .login(loginId);
+                              .login(loginId,empNo);
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -154,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -167,14 +172,14 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FindIdPage()),
-                            (route) => true,
-                          );
+                        context,
+                        MaterialPageRoute(builder: (context) => FindIdPage()),
+                        (route) => true,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -187,14 +192,14 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FindPwdPage()),
-                            (route) => true,
-                          );
+                        context,
+                        MaterialPageRoute(builder: (context) => FindPwdPage()),
+                        (route) => true,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
