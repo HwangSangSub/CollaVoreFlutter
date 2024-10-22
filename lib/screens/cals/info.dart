@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart'; // 날짜 포맷용 패키지
 import 'dart:convert'; // JSON 파싱용
 
 class SchsInfoPage extends StatefulWidget {
@@ -40,40 +41,109 @@ class _SchsInfoPageState extends State<SchsInfoPage> {
     }
   }
 
+  // 날짜 문자열을 '년-월-일 시:분' 형식으로 변환하는 함수
+  String formatDateTime(String dateTimeString) {
+    final dateTime = DateTime.parse(dateTimeString);
+    return DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('일정 상세보기'),
+        title: const Text('일정 상세보기'),
       ),
       body: scheduleDetail == null
-          ? Center(child: CircularProgressIndicator()) // 로딩 중 표시
+          ? const Center(child: CircularProgressIndicator()) // 로딩 중 표시
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '일정 번호: ${scheduleDetail!['schNo']}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          scheduleDetail!['schTitle'],
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      _buildInfoRow(
+                        icon: Icons.numbers,
+                        label: '일정 번호',
+                        value: scheduleDetail!['schNo'].toString(),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildInfoRow(
+                        icon: Icons.calendar_today,
+                        label: '시작일',
+                        value: formatDateTime(scheduleDetail!['startDate']),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildInfoRow(
+                        icon: Icons.calendar_today_outlined,
+                        label: '종료일',
+                        value: formatDateTime(scheduleDetail!['endDate']),
+                      ),
+                      // const SizedBox(height: 10),
+                      // _buildInfoRow(
+                      //   icon: Icons.notes,
+                      //   label: '메모',
+                      //   value: scheduleDetail!['notes'] ?? '메모가 없습니다.',
+                      // ),
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    '제목: ${scheduleDetail!['schTitle']}',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '시작일: ${scheduleDetail!['startDate']}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    '종료일: ${scheduleDetail!['endDate']}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+                ),
               ),
             ),
+    );
+  }
+
+  // 일정 정보를 보여주는 위젯 생성 함수
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 28, color: Colors.blueAccent),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

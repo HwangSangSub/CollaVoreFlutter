@@ -12,13 +12,13 @@ class FindPwdResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('비밀번호 재설정'),
+        title: const Text('비밀번호 재설정'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Center(
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(10),
@@ -27,20 +27,20 @@ class FindPwdResultPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '변경할 비밀번호',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 TextField(
                   controller: _pwdController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: '변경할 비밀번호를 입력하세요',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 // 취소 및 아이디 찾기 버튼
                 Row(
@@ -50,7 +50,7 @@ class FindPwdResultPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.pop(context); // 취소 버튼 - 이전 화면으로 돌아가기
                       },
-                      child: Text(
+                      child: const Text(
                         '취소',
                         style: TextStyle(color: Colors.grey),
                       ),
@@ -79,18 +79,18 @@ class FindPwdResultPage extends StatelessWidget {
                               barrierDismissible: false,
                               builder: (BuildContext ctx) {
                                 return AlertDialog(
-                                  title: Text('비밀번호 재설정 실패'),
+                                  title: const Text('비밀번호 재설정 실패'),
                                   content:
-                                      Text('비밀번호 재설정 실패입니다. 관리자에게 문의바랍니다.'),
+                                      const Text('비밀번호 재설정 실패입니다. 관리자에게 문의바랍니다.'),
                                   actions: [
                                     TextButton(
-                                      child: Text('확인'),
+                                      child: const Text('확인'),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
                                     ),
                                     TextButton(
-                                      child: Text('취소'),
+                                      child: const Text('취소'),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
@@ -117,7 +117,7 @@ class FindPwdResultPage extends StatelessWidget {
                               );
                             },
                           );
-                          Future.delayed(Duration(seconds: 1), () {
+                          Future.delayed(const Duration(seconds: 1), () {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
@@ -129,7 +129,7 @@ class FindPwdResultPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black, // 버튼 색상
                       ),
-                      child: Text('비밀번호 재설정'),
+                      child: const Text('비밀번호 재설정'),
                     ),
                   ],
                 ),
