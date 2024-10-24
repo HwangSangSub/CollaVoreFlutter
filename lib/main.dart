@@ -62,8 +62,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en', ''), // 영어
-        Locale('ko', ''), // 한국어
+        Locale('en', ''),
+        Locale('ko', ''),
       ],
       home: LoginPage(),
     );
@@ -170,15 +170,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: BottomNavigationBar(
               items: const [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
+                  icon: Icon(Icons.calendar_month),
                   label: '일정',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite),
+                  icon: Icon(Icons.list_alt),
                   label: '프로젝트',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.favorite),
+                  icon: Icon(Icons.receipt),
                   label: '전자결재',
                 ),
               ],
