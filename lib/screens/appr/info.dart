@@ -7,6 +7,8 @@ import 'package:pdfx/pdfx.dart';
 import 'package:provider/provider.dart';
 import '../../provider/loginProvider.dart';
 
+import 'apprInfo.dart';
+
 class ApprInfoPage extends StatefulWidget {
   final int eaNo;
 
@@ -104,21 +106,25 @@ class _ApprInfoPageState extends State<ApprInfoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Text(
-                      appDetail['title'] ?? '제목 없음',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                  if (appDetail['title'] != null &&
+                      appDetail['title'].toString().isNotEmpty)
+                    Center(
+                      child: Text(
+                        appDetail['title'] ?? '제목 없음',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 20),
-                  _buildInfoRow(
-                    icon: Icons.calendar_today,
-                    label: '기안일',
-                    value: formatDateTime(appDetail['regDate']),
-                  ),
+                  if (appDetail['regDate'] != null &&
+                      appDetail['regDate'].toString().isNotEmpty)
+                    _buildInfoRow(
+                      icon: Icons.calendar_today,
+                      label: '기안일',
+                      value: formatDateTime(appDetail['regDate']),
+                    ),
                   const SizedBox(height: 10),
                   if (appDetail['compDate'] != null &&
                       appDetail['compDate'].toString().isNotEmpty)
@@ -143,6 +149,25 @@ class _ApprInfoPageState extends State<ApprInfoPage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ApproverInfoPage(
+                eaNo: widget.eaNo,
+                eaStatus: appDetail['status'],
+              ),
+            ),
+          );
+
+          if (result == true) {
+            fetchScheduleDetail(); // 상태 새로고침
+          }
+        },
+        child: const Icon(Icons.account_box_outlined),
+        tooltip: '결재자 정보 보기',
       ),
     );
   }

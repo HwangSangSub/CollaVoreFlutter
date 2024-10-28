@@ -3,12 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-
 import './provider/loginProvider.dart';
 import './screens/member/login.dart';
 import './screens/cals/list.dart';
 import './screens/project/list.dart';
 import './screens/appr/list.dart';
+
+import './screens/member/myPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 비동기 작업 보장
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.black, fontSize: 16),
           titleLarge: TextStyle(
-            color: Color(0xFF6C4EFF), 
+            color: Color(0xFF6C4EFF),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -135,7 +136,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 onSelected: (result) {
                   switch (result) {
                     case 1:
-                      // 마이페이지 이동 (필요 시 구현)
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyPage()),
+                        (route) => true, // 이전 페이지 스택 제거
+                      );
+
                       break;
                     case 2:
                       Provider.of<LoginProvider>(context, listen: false)

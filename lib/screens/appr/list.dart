@@ -11,6 +11,7 @@ class ApprPage extends StatefulWidget {
 }
 
 class _ApprPageState extends State<ApprPage> {
+  late int empNo;
   late Future<List<Map<String, String>>> allDocuments;
   late Future<List<Map<String, String>>> draftDocuments;
   late Future<List<Map<String, String>>> approvalDocuments;
@@ -18,13 +19,34 @@ class _ApprPageState extends State<ApprPage> {
   @override
   void initState() {
     super.initState();
-    final empNo = Provider.of<LoginProvider>(context, listen: false).empNo;
-    allDocuments = fetchDocuments('all', empNo);
-    draftDocuments = fetchDocuments('draft', empNo);
-    approvalDocuments = fetchDocuments('approval', empNo);
+    empNo = Provider.of<LoginProvider>(context, listen: false).empNo!;
+    _refreshAllDocuments();
+    _refreshDraftDocuments();
+    _refreshApprovalDocuments();
   }
 
-  Future<List<Map<String, String>>> fetchDocuments(String category, int? empNo) async {
+  // 각 카테고리별 문서를 다시 불러오는 함수
+  void _refreshAllDocuments() {
+    setState(() {
+      allDocuments = fetchDocuments('all', empNo);
+    });
+  }
+
+  void _refreshDraftDocuments() {
+    setState(() {
+      draftDocuments = fetchDocuments('draft', empNo);
+    });
+  }
+
+  void _refreshApprovalDocuments() {
+    setState(() {
+      approvalDocuments = fetchDocuments('approval', empNo);
+    });
+  }
+
+  // API 호출 함수
+  Future<List<Map<String, String>>> fetchDocuments(
+      String category, int empNo) async {
     final url = Uri.parse(
         'http://192.168.0.40:8099/api/apprAll?appType=$category&empNo=$empNo');
     final response = await http.get(url);
@@ -58,9 +80,9 @@ class _ApprPageState extends State<ApprPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  buildDocumentList(allDocuments),
-                  buildDocumentList(draftDocuments),
-                  buildDocumentList(approvalDocuments),
+                  buildDocumentList('all'),
+                  buildDocumentList('draft'),
+                  buildDocumentList('approval'),
                 ],
               ),
             ),
@@ -91,9 +113,9 @@ class _ApprPageState extends State<ApprPage> {
     );
   }
 
-  Widget buildDocumentList(Future<List<Map<String, String>>> futureDocs) {
+  Widget buildDocumentList(String category) {
     return FutureBuilder<List<Map<String, String>>>(
-      future: futureDocs,
+      future: fetchDocuments(category, empNo), // 매번 새로운 Future 생성
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -103,53 +125,61 @@ class _ApprPageState extends State<ApprPage> {
           return const Center(child: Text('문서가 없습니다'));
         } else {
           final documents = snapshot.data!;
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (context, index) {
-              final doc = documents[index];
-              final eaNo = int.tryParse(doc['eaNo'] ?? '') ?? 0;
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 4,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: const Icon(Icons.description, color: Colors.blue),
-                  title: Text(
-                    doc['title']!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  trailing: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(doc['status']!),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _getStatusText(doc['status']!),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ApprInfoPage(eaNo: eaNo),
-                      ),
-                    );
-                  },
-                ),
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(() {}); // 강제로 UI 갱신
+              await Future.delayed(
+                  const Duration(milliseconds: 500)); // 지연 시간 (옵션)
             },
+            child: ListView.builder(
+              itemCount: documents.length,
+              itemBuilder: (context, index) {
+                final doc = documents[index];
+                final eaNo = int.tryParse(doc['eaNo'] ?? '') ?? 0;
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: const Icon(Icons.description, color: Colors.blue),
+                    title: Text(
+                      doc['title']!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(doc['status']!),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _getStatusText(doc['status']!),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ApprInfoPage(eaNo: eaNo),
+                        ),
+                      ).then((_) => setState(() {})); // 돌아온 후 UI 갱신
+                    },
+                  ),
+                );
+              },
+            ),
           );
         }
       },
@@ -163,6 +193,8 @@ class _ApprPageState extends State<ApprPage> {
       case 'a2':
         return Colors.green;
       case 'a3':
+        return Colors.blue;
+      case 'a4':
         return Colors.red;
       default:
         return Colors.grey;
@@ -174,8 +206,10 @@ class _ApprPageState extends State<ApprPage> {
       case 'a1':
         return '대기';
       case 'a2':
-        return '승인';
+        return '진행';
       case 'a3':
+        return '승인';
+      case 'a4':
         return '반려';
       default:
         return '알 수 없음';
