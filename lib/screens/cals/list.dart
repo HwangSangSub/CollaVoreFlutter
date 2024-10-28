@@ -6,6 +6,7 @@ import 'dart:convert'; // JSON 파싱용
 import '../../provider/loginProvider.dart';
 import './info.dart';
 import './reg.dart';
+import '../../common/apiAddress.dart';
 
 class CalsPage extends StatefulWidget {
   final DateTime? selectedDate; // 선택된 날짜를 받을 수 있는 매개변수
@@ -24,7 +25,8 @@ class _CalsPageState extends State<CalsPage> {
   @override
   void initState() {
     super.initState();
-    selectedDate = widget.selectedDate ?? DateTime.now(); // 전달된 날짜가 없으면 오늘 날짜 사용
+    selectedDate =
+        widget.selectedDate ?? DateTime.now(); // 전달된 날짜가 없으면 오늘 날짜 사용
 
     Future.microtask(() {
       empNo = Provider.of<LoginProvider>(context, listen: false).empNo;
@@ -36,7 +38,7 @@ class _CalsPageState extends State<CalsPage> {
   Future<void> fetchEventsForDate(DateTime date) async {
     final formattedDate = _formatDate(date);
     final url = Uri.parse(
-      'http://192.168.0.40:8099/api/schsSelectAll?empNo=$empNo&selectDate=$formattedDate',
+      ApiAddress.schsSelectAll + '?empNo=$empNo&selectDate=$formattedDate',
     );
 
     try {

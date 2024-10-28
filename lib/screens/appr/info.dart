@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:provider/provider.dart';
 import '../../provider/loginProvider.dart';
+import '../../common/apiAddress.dart';
 
 import 'apprInfo.dart';
 
@@ -40,7 +41,7 @@ class _ApprInfoPageState extends State<ApprInfoPage> {
   /// API에서 스케줄 정보를 가져오고 PDF를 초기화합니다.
   Future<void> fetchScheduleDetail() async {
     final url = Uri.parse(
-      'http://192.168.0.40:8099/api/appInfo?empNo=$empNo&eaNo=${widget.eaNo}',
+      ApiAddress.appInfo + '?empNo=$empNo&eaNo=${widget.eaNo}',
     );
 
     try {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './login.dart';
+import '../../common/apiAddress.dart';
 
 class FindPwdResultPage extends StatelessWidget {
   final TextEditingController _pwdController = TextEditingController();
@@ -59,8 +60,7 @@ class FindPwdResultPage extends StatelessWidget {
                       onPressed: () async {
                         String email = foundId;
                         String resetPwd = _pwdController.text;
-                        final url =
-                            Uri.parse('http://192.168.0.40:8099/api/pwdModify');
+                        final url = Uri.parse(ApiAddress.pwdModify);
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({
@@ -69,7 +69,7 @@ class FindPwdResultPage extends StatelessWidget {
                             }));
                         late String resetResult;
                         if (response.statusCode == 200) {
-                            resetResult = response.body;
+                          resetResult = response.body;
                         } else {
                           resetResult = 'Error';
                         }
@@ -80,8 +80,8 @@ class FindPwdResultPage extends StatelessWidget {
                               builder: (BuildContext ctx) {
                                 return AlertDialog(
                                   title: const Text('비밀번호 재설정 실패'),
-                                  content:
-                                      const Text('비밀번호 재설정 실패입니다. 관리자에게 문의바랍니다.'),
+                                  content: const Text(
+                                      '비밀번호 재설정 실패입니다. 관리자에게 문의바랍니다.'),
                                   actions: [
                                     TextButton(
                                       child: const Text('확인'),
@@ -120,7 +120,8 @@ class FindPwdResultPage extends StatelessWidget {
                           Future.delayed(const Duration(seconds: 1), () {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
                               (route) => false,
                             );
                           });

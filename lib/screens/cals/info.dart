@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart'; // 날짜 포맷용 패키지
 import 'dart:convert'; // JSON 파싱용
+import '../../common/apiAddress.dart';
 
 class SchsInfoPage extends StatefulWidget {
   final int schNo; // schNo를 전달받기 위한 변수
@@ -23,8 +24,8 @@ class _SchsInfoPageState extends State<SchsInfoPage> {
 
   // API에서 일정 상세 정보를 가져오는 함수
   Future<void> fetchScheduleDetail() async {
-    final url = Uri.parse(
-        'http://192.168.0.40:8099/api/schsInfo?schNo=${widget.schNo}'); // API URL 설정
+    final url =
+        Uri.parse(ApiAddress.schsInfo + '?schNo=${widget.schNo}'); // API URL 설정
 
     try {
       final response = await http.get(url);

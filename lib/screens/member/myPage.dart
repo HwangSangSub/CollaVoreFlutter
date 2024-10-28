@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../provider/loginProvider.dart';
+import '../../common/apiAddress.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -20,6 +21,7 @@ class _MyPageState extends State<MyPage> {
   late TextEditingController infoController;
   late TextEditingController passwordController;
   File? _selectedImage;
+  String? _imageUrl;
 
   @override
   void initState() {
@@ -36,9 +38,10 @@ class _MyPageState extends State<MyPage> {
 
   // 회원 정보 조회
   Future<void> _fetchUserInfo() async {
-    final url = Uri.parse('http://192.168.0.40:8099/api/userInfo?empNo=$empNo');
+    final url = Uri.parse('${ApiAddress.userInfo}?empNo=$empNo');
     try {
       final response = await http.get(url);
+      print(jsonDecode(utf8.decode(response.bodyBytes)));
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
@@ -47,6 +50,12 @@ class _MyPageState extends State<MyPage> {
           positionController.text = data['posiName'] ?? '';
           telController.text = data['tel'] ?? '';
           infoController.text = data['info'] ?? '';
+          // 이미지 경로 처리
+          final imagePath = data['profileImg'] as String?;
+          _imageUrl = imagePath != null
+              ? '${ApiAddress.baseUrl}$imagePath' // 절대 경로로 변환
+              : null;
+          print(_imageUrl);
         });
       } else {
         _showErrorDialog('회원 정보를 불러오는 데 실패했습니다.');
@@ -58,7 +67,7 @@ class _MyPageState extends State<MyPage> {
 
   // 전화번호 형식 적용 함수
   String _formatPhoneNumber(String input) {
-    final digitsOnly = input.replaceAll(RegExp(r'\D'), ''); // 숫자 이외 제거
+    final digitsOnly = input.replaceAll(RegExp(r'\D'), '');
     if (digitsOnly.length <= 3) {
       return digitsOnly;
     } else if (digitsOnly.length <= 7) {
@@ -77,29 +86,34 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  // 회원 정보 업데이트
   Future<void> _updateUserInfo() async {
-    final url = Uri.parse('http://192.168.0.40:8099/api/updateUserInfo');
+    final url = Uri.parse(ApiAddress.updateUserInfo);
     final request = http.MultipartRequest('POST', url);
 
-    // 필드 추가
     request.fields['empNo'] = empNo.toString();
-    request.fields['tel'] = telController.text;
-    request.fields['info'] = infoController.text;
-    request.fields['password'] = passwordController.text;
+    if (telController.text.isNotEmpty) {
+      request.fields['tel'] = telController.text;
+    }
+    if (infoController.text.isNotEmpty) {
+      request.fields['info'] = infoController.text;
+    }
+    if (passwordController.text.isNotEmpty) {
+      request.fields['password'] = passwordController.text;
+    }
 
-    // 이미지 파일이 있을 경우 추가
     if (_selectedImage != null) {
       request.files.add(await http.MultipartFile.fromPath(
-        'img', // 서버의 파라미터 이름과 일치해야 함
+        'img',
         _selectedImage!.path,
       ));
-      print(_selectedImage!.path);
     }
 
     try {
-      final response = await request.send(); // 요청 보내기
+      final response = await request.send();
       if (response.statusCode == 200) {
         _showSuccessDialog('회원 정보가 성공적으로 업데이트되었습니다.');
+        await _fetchUserInfo(); // 정보 갱신
       } else {
         _showErrorDialog('회원 정보 업데이트에 실패했습니다.');
       }
@@ -108,7 +122,7 @@ class _MyPageState extends State<MyPage> {
     }
   }
 
-// 성공 메시지 표시
+  // 성공 메시지 표시
   Future<void> _showSuccessDialog(String message) async {
     await showDialog(
       context: context,
@@ -117,7 +131,10 @@ class _MyPageState extends State<MyPage> {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              _fetchUserInfo(); // 다이얼로그 닫은 후 정보 갱신
+            },
             child: const Text('확인'),
           ),
         ],
@@ -125,7 +142,7 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-// 오류 메시지 표시
+  // 오류 메시지 표시
   Future<void> _showErrorDialog(String message) async {
     await showDialog(
       context: context,
@@ -169,9 +186,11 @@ class _MyPageState extends State<MyPage> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!)
-                      : const AssetImage('assets/images/member/default.png')
-                          as ImageProvider,
+                      ? FileImage(_selectedImage!) // 새로 선택한 이미지가 있으면 사용
+                      : _imageUrl != null
+                          ? NetworkImage(_imageUrl!) // 서버에서 받아온 네트워크 이미지 사용
+                          : const AssetImage('assets/images/member/default.png')
+                              as ImageProvider, // 기본 이미지 사용
                 ),
               ),
               const SizedBox(height: 20),
@@ -227,7 +246,6 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  // 읽기 전용 텍스트 필드 위젯 생성
   Widget _buildReadOnlyTextField({
     required TextEditingController controller,
     required String label,
@@ -244,7 +262,6 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  // 일반 텍스트 필드 위젯 생성
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -266,7 +283,6 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  // 다중 줄 텍스트 필드 위젯 생성
   Widget _buildMultiLineTextField({
     required TextEditingController controller,
     required String label,

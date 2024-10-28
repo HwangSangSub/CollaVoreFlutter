@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../common/apiAddress.dart';
 
 import './FindPwdResult.dart';
 
@@ -71,8 +72,7 @@ class FindPwdPage extends StatelessWidget {
                       onPressed: () async {
                         String email = _emailController.text;
                         String name = _nameController.text;
-                        final url =
-                            Uri.parse('http://192.168.0.40:8099/api/chkUser');
+                        final url = Uri.parse(ApiAddress.chkUser);
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({

@@ -1,4 +1,5 @@
 import 'package:collavore/models/cals.dart';
+import 'package:collavore/screens/appr/info.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert'; // JSON 파싱용
 
 import '../../provider/loginProvider.dart';
+import '../../common/apiAddress.dart';
 
 class CalsRegPage extends StatefulWidget {
   final DateTime selectDate; // 선택된 날짜를 외부에서 전달받음
@@ -178,7 +180,7 @@ class _CalsRegPageState extends State<CalsRegPage> {
   Future<bool> _registerEvent(Cals cals) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.40:8099/api/schsAdd'),
+        Uri.parse(ApiAddress.schsAdd),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'schTitle': cals.title,

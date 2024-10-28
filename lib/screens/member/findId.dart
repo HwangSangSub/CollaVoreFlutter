@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import './findIdResult.dart';
+import '../../common/apiAddress.dart';
 
 class FindIdPage extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
@@ -74,8 +75,7 @@ class FindIdPage extends StatelessWidget {
                       onPressed: () async {
                         String name = _nameController.text;
                         String tel = _telController.text;
-                        final url =
-                            Uri.parse('http://192.168.0.40:8099/api/findId');
+                        final url = Uri.parse(ApiAddress.findId);
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({
@@ -120,7 +120,8 @@ class FindIdPage extends StatelessWidget {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => FindIdResultPage(foundId: chkId)),
+                                builder: (context) =>
+                                    FindIdResultPage(foundId: chkId)),
                             (route) => false,
                           );
                         }

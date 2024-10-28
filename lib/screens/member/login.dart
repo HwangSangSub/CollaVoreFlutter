@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../provider/loginProvider.dart';
 import './findId.dart';
 import './findPwd.dart';
+import '../../common/apiAddress.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -102,8 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                       if (_formKey.currentState!.validate()) {
                         String id = _idEditingController.text;
                         String pwd = _pwdEditingController.text;
-                        final url =
-                            Uri.parse('http://192.168.0.40:8099/api/login');
+                        final url = Uri.parse(ApiAddress.login);
                         final response = await http.post(url,
                             headers: {'Content-Type': 'application/json'},
                             body: json.encode({
@@ -113,10 +113,16 @@ class _LoginPageState extends State<LoginPage> {
                         late Map<String, dynamic> result;
                         late String loginId;
                         late int empNo;
+                        print(jsonDecode(utf8.decode(response.bodyBytes)));
                         if (response.statusCode == 200) {
                           result = jsonDecode(utf8.decode(response.bodyBytes));
-                          loginId = result['email'];
-                          empNo = result['empNo'];
+                          if (result['email'] != null) {
+                            loginId = result['email'];
+                            empNo = result['empNo'];
+                          } else {
+                            loginId = '';
+                            empNo = 0;
+                          }
                         } else {
                           loginId = '';
                           empNo = 0;
@@ -147,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                               });
                         } else {
                           Provider.of<LoginProvider>(context, listen: false)
-                              .login(loginId,empNo);
+                              .login(loginId, empNo);
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../../provider/loginProvider.dart';
+import '../../common/apiAddress.dart';
 
 class ApproverInfoPage extends StatefulWidget {
   final int eaNo;
@@ -32,7 +33,7 @@ class _ApproverInfoPageState extends State<ApproverInfoPage> {
   /// 결재자 정보를 가져오는 비동기 함수
   Future<List<dynamic>> fetchApprovers() async {
     final url = Uri.parse(
-      'http://192.168.0.40:8099/api/apprInfo?empNo=$empNo&eaNo=${widget.eaNo}',
+      ApiAddress.appInfo + '?empNo=$empNo&eaNo=${widget.eaNo}',
     );
 
     try {
@@ -50,7 +51,7 @@ class _ApproverInfoPageState extends State<ApproverInfoPage> {
   /// 결재 처리 API 호출 함수
   Future<void> processApproval(int earNo, String status) async {
     final url = Uri.parse(
-      'http://192.168.0.40:8099/api/processApproval?earNo=$earNo&apprStatus=$status',
+      ApiAddress.processApproval + '?earNo=$earNo&apprStatus=$status',
     );
 
     try {

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../provider/loginProvider.dart';
 import './info.dart';
+import '../../common/apiAddress.dart';
 
 class ApprPage extends StatefulWidget {
   @override
@@ -47,8 +48,8 @@ class _ApprPageState extends State<ApprPage> {
   // API 호출 함수
   Future<List<Map<String, String>>> fetchDocuments(
       String category, int empNo) async {
-    final url = Uri.parse(
-        'http://192.168.0.40:8099/api/apprAll?appType=$category&empNo=$empNo');
+    final url =
+        Uri.parse(ApiAddress.apprAll + '?appType=$category&empNo=$empNo');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
