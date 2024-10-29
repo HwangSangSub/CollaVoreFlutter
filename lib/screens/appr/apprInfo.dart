@@ -33,7 +33,7 @@ class _ApproverInfoPageState extends State<ApproverInfoPage> {
   /// 결재자 정보를 가져오는 비동기 함수
   Future<List<dynamic>> fetchApprovers() async {
     final url = Uri.parse(
-      ApiAddress.appInfo + '?empNo=$empNo&eaNo=${widget.eaNo}',
+      ApiAddress.apprInfo + '?empNo=$empNo&eaNo=${widget.eaNo}',
     );
 
     try {
@@ -190,7 +190,8 @@ class _ApproverInfoPageState extends State<ApproverInfoPage> {
                     ),
                     trailing:
                         (widget.eaStatus == 'a1' || widget.eaStatus == 'a2') &&
-                                approver['apprStatus'] == 'b1'
+                                approver['apprStatus'] == 'b1' &&
+                                approver['apprEmpNo'] == empNo
                             ? Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
