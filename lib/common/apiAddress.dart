@@ -1,7 +1,7 @@
 class ApiAddress {
-  static const String baseUrl = "http://192.168.0.4:8099"; // 집에서
-  static const String baseApiUrl = "http://192.168.0.4:8099/api"; // 집에서
-  // static const String baseUrl = "http://192.168.0.40:8099/api"; // 학교에서
+  static const String baseUrl = "http://192.168.0.40:8099"; // 집에서
+  // static const String baseApiUrl = "http://192.168.0.4:8099/api"; // 집에서
+  static const String baseApiUrl = "http://192.168.0.40:8099/api"; // 학교에서
 
   static const String login = '$baseApiUrl/login';
   static const String findId = '$baseApiUrl/findId';
@@ -16,5 +16,6 @@ class ApiAddress {
 
   static const String apprAll = '$baseApiUrl/apprAll';
   static const String appInfo = '$baseApiUrl/appInfo';
+  static const String apprInfo = '$baseApiUrl/apprInfo';
   static const String processApproval = '$baseApiUrl/processApproval';
 }
