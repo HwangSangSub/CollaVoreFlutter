@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import './provider/loginProvider.dart';
 import './screens/member/login.dart';
 import './screens/cals/list.dart';
-import './screens/project/list.dart';
+// import './screens/project/list.dart';
 import './screens/appr/list.dart';
 
 import './screens/member/myPage.dart';
@@ -91,11 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
         page = const CalsPage();
         selectedName = '일정관리';
         break;
+      // case 1:
+      //   page = ProjectPage();
+      //   selectedName = '프로젝트관리';
+      //   break;
       case 1:
-        page = ProjectPage();
-        selectedName = '프로젝트관리';
-        break;
-      case 2:
         page = ApprPage();
         selectedName = '전자결재관리';
         break;
@@ -179,10 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   icon: Icon(Icons.calendar_month),
                   label: '일정',
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.list_alt),
-                  label: '프로젝트',
-                ),
+                // BottomNavigationBarItem(
+                //   icon: Icon(Icons.list_alt),
+                //   label: '프로젝트',
+                // ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.receipt),
                   label: '전자결재',
